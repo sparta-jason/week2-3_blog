@@ -1,0 +1,74 @@
+.card{
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+#cards_box{
+  width: 70%;
+  margin: 20px auto;
+}
+
+.card-title{
+  font-size: 150%;
+}
+
+#post_btn{
+  font-size: 20px;
+  margin-top : 20px;
+  margin-bottom: 0px;
+}
+
+.navbar{
+  font-family: 'Song Myung', serif;
+  font-weight: bolder;
+  background-color: #586361;
+}
+
+.posting_box{
+  width: 550px;
+  margin: 20px auto;
+}
+
+.btn_wrap{
+  text-align: center;
+}
+
+#nav-title{
+  color:azure;
+}
+
+a{
+  text-decoration: none;
+}
+a:hover{
+  text-decoration: none;
+}
+
+.detail_content{
+  width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+#top_set{
+  color: dimgray;
+  font-size: 13px;
+}
+
+#tolist_wrap{
+  text-align: center;
+  padding-bottom: 50px;
+}
+
+#edit_btn{
+  cursor: pointer;
+}
+
+#edit_btn:hover{
+  font-weight: bold;
+}
+
+#content{
+  height: 50%;
+}
+
