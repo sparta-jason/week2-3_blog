@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const connect = () => {
   mongoose
-    // .connect("mongodb://test:test@localhost:27017/postDB?authSource=admin", {
-    .connect("mongodb://localhost:27017/postDB", {
+  //테스트 환경에 따라 주석변경
+    .connect("mongodb://test:test@localhost:27017/postDB?authSource=admin", {
+    //.connect("mongodb://localhost:27017/postDB", {
       useNewUrlParser: true,
       ignoreUndefined: true
     })

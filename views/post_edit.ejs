@@ -106,8 +106,13 @@
             //수정된 경우 해당 포스팅 상세화면으로 이동
             let moveTo = "?postsId=" + postsId;
             if (response["result"] == "패스워드가 다릅니다.") {
-            } else {
-              window.location.href = "/post_detail" + moveTo;
+
+              //delete와 달리 수정완료된 경우엔 해당 포스팅 조회 경로로 이동해야하므로 추가 분기처리
+            } else if(response["result"] == "해당 포스팅이 존재하지 않습니다.") {
+              window.location.href = "/"
+              return
+            } else{
+              window.location.href = "/post_detail" + moveTo
             }
           }
         });

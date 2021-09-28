@@ -90,10 +90,11 @@ router.put("/posting_update", async (req, res, next) => {
   let put_data = req.body;
 
   //postsId가 존재하는지 null 체크
-  if (req.body.postsId == null) {
+  if (put_data.postsId == null) {
     return res.send({ result: "해당 포스팅이 존재하지 않습니다." })
   }
 
+  //postsId가 db상 존재하는지 체크
   post = await Posts.findOne({ postsId: put_data.postsId });
   if (post == null) {
     return res.send({ result: "해당 포스팅이 존재하지 않습니다." })
@@ -132,14 +133,14 @@ router.put("/posting_update", async (req, res, next) => {
 //포스팅 삭제 시
 router.delete("/posting_delete", async (req, res, next) => {
 
+  let put_data = req.body;
+
   //postsId가 존재하는지 null 체크
-  if (req.body.postsId == null) {
-    return res.send({ result: "해당 포스팅은 이미 삭제되었습니다." })
+  if (put_data.postsId == null) {
+    return res.send({ result: "해당 포스팅이 존재하지 않습니다." })
   }
   
-  let put_data = req.body;
   post = await Posts.findOne({ postsId: put_data.postsId });
-
   if (post == null) {
     return await res.send({ result: "해당 포스팅이 존재하지 않습니다." })
   }
