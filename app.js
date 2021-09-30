@@ -37,6 +37,14 @@ app.get("/post_edit", (req, res) => {
   res.render("post_edit");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`);
 });

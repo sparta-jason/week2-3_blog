@@ -24,6 +24,10 @@
   background-color: #586361;
 }
 
+#nav-login{
+  color: wheat;
+}
+
 .posting_box{
   width: 550px;
   margin: 20px auto;
