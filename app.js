@@ -15,6 +15,9 @@ app.use(xss());
 const postsRouter = require("./routes/posts");
 app.use("/api", [postsRouter]);
 
+const usersRouter = require("./routes/users");
+app.use("/api", [usersRouter]);
+
 const connect = require("./schemas");
 connect();
 
