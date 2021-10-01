@@ -1,6 +1,7 @@
 .card{
   cursor: pointer;
   margin-bottom: 15px;
+
 }
 
 #cards_box{
@@ -78,4 +79,21 @@ a:hover{
 
 .modal{
   z-index: 2000;
+}
+
+/* rt */
+#reply_card{
+  width: 65%;
+  height: 130px;
+  margin: 20px auto;
+}
+
+#reply_makeBox{
+  width: 65%;
+  height: 180px;
+  margin: 20px auto;
+}
+
+#reply_input{
+  height: 100px;
 }

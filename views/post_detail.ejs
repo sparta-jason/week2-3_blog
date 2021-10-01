@@ -75,6 +75,7 @@
 
       $(document).ready(function() {
         get_detail();
+        get_replies();
       });
 
       // get_detail 함수 내에서 할당되고 move_edit함수에서 인자로 사용
@@ -130,6 +131,94 @@
         let moveTo = "?postsId=" + postsId_toEdit;
         window.location.href = "/post_edit" + moveTo;
       }
+
+
+      //---댓글 관련 기능---
+
+      function get_replies() {
+        $("#replies_box").empty();
+        
+        $.ajax({
+          type: "GET",
+          url: `/api/replies/${postsId}`,
+          data: {},
+          success: function(response) {
+            console.log(response);
+            let replies = response["replies"];
+            for (let i = 0; i < replies.length; i++) {
+              make_card(replies[i])
+              // if (replies[i].nickname == response.chk_nickname) {
+              //   make_authcard(replies[i])
+              // }else{
+              //   make_card(replies[i]);
+              // }
+              
+            }
+          }
+        });
+      }
+      
+      function make_authcard(item) {
+        let htmlTemp = `
+                      <div class="card" id="reply_card">
+                        <div class="card-content">
+                          <div class="content">
+                            작성자 : ${item.nickname} 
+                            <button>수정</button>
+                            <button>삭제</button><br>
+                            ${item.reply_content}
+                          </div>
+                        </div>
+                      </div>
+                            `;
+        $("#replies_box").append(htmlTemp);
+      }
+
+      function make_card(item) {
+        let htmlTemp = `
+                      <div class="card" id="reply_card">
+                        <div class="card-content">
+                          <div class="content">
+                            작성자 : ${item.nickname} <br>
+                            ${item.reply_content}
+                          </div>
+                        </div>
+                      </div>
+                            `;
+        $("#replies_box").append(htmlTemp);
+      }
+
+      //댓글작성
+      function create_reply() {
+        let reply_content = $("#reply_input").val();
+
+        $.ajax({
+          type: "POST",
+          url: `/api/reply_create`,
+          headers: {
+                  authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+          data: {
+            reply_content,
+            postsId,
+          },
+          success: function(response) {
+            window.location.reload();
+            alert(response["result"]);
+          },
+          error: function (error) {
+            customAlert(error.responseJSON.errorMessage);
+          },
+        });
+      }
+
+      function customAlert(text, confirmCallback) {
+        $("#alertText").text(text);
+        $("#alertModal").modal("show");
+        if (confirmCallback) {
+          $("#alertModal .btn-confirm").click(confirmCallback);
+        }
+      }
     </script>
   </head>
   <body>
@@ -154,5 +243,80 @@
         <a href="/"><button class="button" id="tolist_btn">목록으로</button></a>
       </div>
     </div>
+
+    <div class="card" id="reply_makeBox">
+      <div class="card-content">
+        <div class="control">
+          <input class="input" id="reply_input" type="text" placeholder="여러분의 댓글을 입력해주세요.">
+        </div>
+        <button onclick="create_reply()">댓글작성</button>
+      </div>
+    </div>
+
+    <div id="replies_box">
+      <div class="card" id="reply_card">
+        <div class="card-content">
+          <div class="content">
+            Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis consectetur purus sit amet fermentum.
+          </div>
+        </div>
+      </div>
+  
+      <div class="card" id="reply_card">
+        <div class="card-content">
+          <div class="content">
+            Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis consectetur purus sit amet fermentum.
+          </div>
+        </div>
+      </div>
+  
+      <div class="card" id="reply_card">
+        <div class="card-content">
+          <div class="content">
+            Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis consectetur purus sit amet fermentum.
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- modal -->
+    <div
+      class="modal text-left"
+      id="alertModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="alertModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="alertModalLabel">알림</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="alertText">
+            정말로 로그아웃 하시겠습니까?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-sparta btn-confirm"
+              data-dismiss="modal"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </body>
 </html>

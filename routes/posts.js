@@ -20,14 +20,6 @@ router.get("/posts/:postsId", async (req, res) => {
   const { postsId } = req.params;
 
   post = await Posts.findOne({ postsId: postsId });
-  
-
-  console.log(post)
-  //postsId가 존재하는지 체크 후 진행
-  // if (post.postsId == null) {
-  //   return res.send({ result: "해당 포스팅이 존재하지 않습니다." })
-  // }
-
   res.json({ detail: post });
 });
 
