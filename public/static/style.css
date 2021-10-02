@@ -82,7 +82,7 @@ a:hover{
 }
 
 /* rt */
-#reply_card{
+.reply_card{
   width: 65%;
   height: 130px;
   margin: 20px auto;

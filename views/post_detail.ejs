@@ -22,20 +22,6 @@
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
     />
 
-    <!-- CSS only -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
-      crossorigin="anonymous"
-    />
-    <!-- JavaScript Bundle with Popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
-      crossorigin="anonymous"
-    ></script>
-
     <!-- Font Awesome CSS -->
     <link
       href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -132,41 +118,57 @@
         window.location.href = "/post_edit" + moveTo;
       }
 
+      //--- 이하 댓글 관련 기능 ---
 
-      //---댓글 관련 기능---
-
+      //-- 댓글 조회 --
       function get_replies() {
         $("#replies_box").empty();
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          $("#reply_input").on("click", function(){
+            alert("로그인이 필요한 기능입니다.");
+            window.location.href="/login"
+          });
+        }
         
         $.ajax({
-          type: "GET",
+          type: "POST",
           url: `/api/replies/${postsId}`,
-          data: {},
+          data: {
+            token,
+          },
           success: function(response) {
             console.log(response);
             let replies = response["replies"];
             for (let i = 0; i < replies.length; i++) {
-              make_card(replies[i])
-              // if (replies[i].nickname == response.chk_nickname) {
-              //   make_authcard(replies[i])
-              // }else{
-              //   make_card(replies[i]);
-              // }
+              if (replies[i].nickname == response.chk_nickname) {
+                make_authcard(replies[i])
+                console.log('-auth card 생성!-')
+              }else{
+                make_card(replies[i]);
+                console.log('-normal card 생성!-')
+              }
               
             }
           }
         });
       }
-      
+
+      //삭제 버튼 온클릭 임시로 백업 => onclick="delete_card('${item.replyId}')"
+      //-- 해당 계정으로 작성한 댓글카드 생성 --
       function make_authcard(item) {
         let htmlTemp = `
-                      <div class="card" id="reply_card">
+                      <div class="card reply_card" id="${item.replyId}">
                         <div class="card-content">
                           <div class="content">
-                            작성자 : ${item.nickname} 
-                            <button>수정</button>
-                            <button>삭제</button><br>
+                            작성자 : ${item.nickname}
+                            <button onclick="edit_card('${item.replyId}','${item.nickname}','${item.reply_content}')">수정</button>
+                            
+                            <button onclick="deleteAlert('${item.replyId}')">삭제</button><br>
+                            <div>
                             ${item.reply_content}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -174,13 +176,16 @@
         $("#replies_box").append(htmlTemp);
       }
 
+      //-- 해당 계정이 아닌 계정으로 생성한 댓글카드 생성 --
       function make_card(item) {
         let htmlTemp = `
-                      <div class="card" id="reply_card">
+                      <div class="card" id="${item.replyId}">
                         <div class="card-content">
                           <div class="content">
                             작성자 : ${item.nickname} <br>
+                            <div>
                             ${item.reply_content}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -188,7 +193,8 @@
         $("#replies_box").append(htmlTemp);
       }
 
-      //댓글작성
+      //--- 댓글작성 ---
+
       function create_reply() {
         let reply_content = $("#reply_input").val();
 
@@ -212,6 +218,79 @@
         });
       }
 
+      //--- 이하 댓글 수정/삭제 ---
+
+      //-- 수정버튼 클릭 --
+      function edit_card(replyId, nickname, reply_content) {
+        console.log('edit클릭!!');
+        const temp_replyId = replyId;
+        const temp_nickname = nickname;
+        const temp_reply_content = reply_content;
+
+      $( "div#"+temp_replyId ).replaceWith(`<div class="card reply_card" id="${temp_replyId}">
+                        <div class="card-content">
+                          <div class="content">
+                            작성자 : ${temp_nickname}
+                            <button onclick="edit_confirm('${temp_replyId}')">저장</button>
+                            <button onclick="window.location.reload()">취소</button><br>
+                            <input id="edit_content" value="${temp_reply_content}"></input>
+                          </div>
+                        </div>
+                      </div>`);
+      }
+
+      //-- 수정 확인 --
+      function edit_confirm(replyId){
+        const editted_content = $('#edit_content').val();
+        console.log(editted_content)
+
+        $.ajax({
+          type: "POST",
+          url: `/api/reply_edit/`,
+          headers: {
+                  authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+          data: {
+            editted_content,
+            replyId,
+            postsId,
+          },
+          success: function(response) {
+            window.location.reload();
+            alert(response["result"]);
+          },
+          error: function (error) {
+            customAlert(error.responseJSON.errorMessage);
+          },
+        });
+      }
+
+
+      //-- 댓글 삭제 --
+      function delete_card(replyId){
+
+        $.ajax({
+          type: "POST",
+          url: `/api/reply_delete/`,
+          headers: {
+                  authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+          data: {
+            replyId,
+            postsId,
+          },
+          success: function(response) {
+            window.location.reload();
+            alert(response["result"]);
+          },
+          error: function (error) {
+            customAlert(error.responseJSON.errorMessage);
+          },
+        });
+      }
+
+
+      //--Alert--
       function customAlert(text, confirmCallback) {
         $("#alertText").text(text);
         $("#alertModal").modal("show");
@@ -219,6 +298,33 @@
           $("#alertModal .btn-confirm").click(confirmCallback);
         }
       }
+
+
+      var $button= $("button[data-target='#exampleModal']");
+        $(".parent").click(function(event){
+          if (!$(event.target).is($button)) {
+            alert("Parent event");
+          }
+        })
+        $('#exampleModal').on('show.bs.modal', function (event) {
+          alert("btn event");
+          var button= $(event.relatedTarget) //Button triggered the modal
+          var recipient= button.data('whatever')
+          var message= button.data('message')
+          var modal= $(this)
+          modal.find('.modal-title').text('New message to ' + recipient)
+          modal.find('.modal-body input').val(recipient)
+          modal.find('.modal-body textarea').val(message)
+        })
+
+      function deleteAlert(replyId) {
+        $("#deleteAlertModal").modal("show");
+        console.log('딜리트 알랏')
+        console.log(deleteReplyId)
+      }
+
+
+
     </script>
   </head>
   <body>
@@ -254,29 +360,6 @@
     </div>
 
     <div id="replies_box">
-      <div class="card" id="reply_card">
-        <div class="card-content">
-          <div class="content">
-            Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis consectetur purus sit amet fermentum.
-          </div>
-        </div>
-      </div>
-  
-      <div class="card" id="reply_card">
-        <div class="card-content">
-          <div class="content">
-            Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis consectetur purus sit amet fermentum.
-          </div>
-        </div>
-      </div>
-  
-      <div class="card" id="reply_card">
-        <div class="card-content">
-          <div class="content">
-            Lorem ipsum leo risus, porta ac consectetur ac, vestibulum at eros. Donec id elit non mi porta gravida at eget metus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Cras mattis consectetur purus sit amet fermentum.
-          </div>
-        </div>
-      </div>
     </div>
 
 
@@ -308,11 +391,45 @@
           <div class="modal-footer">
             <button
               type="button"
-              class="btn btn-outline-sparta btn-confirm"
+              class="button"
               data-dismiss="modal"
             >
               확인
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- reply delete modal -->
+    <div
+      class="modal text-left"
+      id="deleteAlertModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="alertModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" id="delete_reply_modal" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="alertModalLabel">알림</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="alertText">
+            정말로 댓글을 삭제하겠습니까?
+          </div>
+          <div class="modal-footer">
+              
+              <button class="button is-warning" onclick="delete_card(deleteReplyId)">확인</button>
+              <button type="button" class="button" data-dismiss="modal">취소</button>
           </div>
         </div>
       </div>

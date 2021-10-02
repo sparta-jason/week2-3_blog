@@ -99,6 +99,11 @@
                             `;
         $("#cards_box").append(htmlTemp);
       }
+
+      function signOut() {
+        localStorage.clear();
+        window.location.href = "/";
+      }
     </script>
   </head>
   <body>
@@ -106,7 +111,8 @@
       <span class="container-fluid">
         <a id="nav-title" class="navbar-brand" href="/">제이슨의 게시판</a>
         <a id="nav-login" class="navbar-brand" href="/login">로그인</a>
-        <a id="nav-login" class="navbar-brand" href="/register">회원가입</a>
+        <a id="nav-regist" class="navbar-brand" href="/register">회원가입</a>
+        <a id="nav-logout" class="navbar-brand" onclick="signOut()">로그아웃</a>
       </span>
     </nav>
 
