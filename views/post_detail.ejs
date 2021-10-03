@@ -23,10 +23,7 @@
     />
 
     <!-- Font Awesome CSS -->
-    <link
-      href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-      rel="stylesheet"
-    />
+    <script src="https://kit.fontawesome.com/47dd3a40e7.js" crossorigin="anonymous"></script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -58,11 +55,25 @@
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
       const postsId = urlParams.get("postsId");
+      const token = localStorage.getItem("token");
 
       $(document).ready(function() {
         get_detail();
         get_replies();
+        if (token) {
+          $("#nav-loginOut").text("로그아웃");
+        }
       });
+
+      //login 여부에 따라 로그아웃처리 또는 login페이지 이동
+      function signInOut() {
+        if(token){
+          localStorage.clear();
+          window.location.href = "/";
+        } else{
+          window.location.href = "/login";
+        }
+      }
 
       // get_detail 함수 내에서 할당되고 move_edit함수에서 인자로 사용
       // > 수정화면 진입 시 동일 포스트 보여주기 위함
@@ -113,8 +124,7 @@
       }
 
       //수정하기 클릭 시 실행하여 post_edit페이지로 이동
-            //토큰 여부 사전 체크
-      const token = localStorage.getItem("token");
+      //토큰 여부 사전 체크
       function tokenCheck(){
         if (!token) {
           alert("로그인이 필요한 기능입니다.");
@@ -150,6 +160,11 @@
             console.log(response);
             let replies = response["replies"];
             for (let i = 0; i < replies.length; i++) {
+
+              let contentBr = replies[i].reply_content
+              contentBr = contentBr.replace(/(?:\r\n|\r|\n)/g,'<br>');
+              replies[i].reply_content = contentBr
+
               if (replies[i].nickname == response.chk_nickname) {
                 make_authcard(replies[i])
                 console.log('-auth card 생성!-')
@@ -169,11 +184,14 @@
         let htmlTemp = `
                       <div class="card reply_card" id="${item.replyId}">
                         <div class="card-content">
-                          <div class="content">
-                            작성자 : ${item.nickname}
-                            <button onclick="edit_card('${item.replyId}','${item.nickname}','${item.reply_content}')">수정</button>
+                          <div class="content"><i class="far fa-comment-dots"></i>
                             
-                            <button onclick="deleteAlert('${item.replyId}')">삭제</button><br>
+                            ${item.nickname}
+                            <div id="reply_topSet">
+                              <span onclick="edit_card('${item.replyId}','${item.nickname}','${item.reply_content}')"> 수정 </span> ｜ 
+                              
+                              <span onclick="deleteAlert('${item.replyId}')">삭제</span>
+                            </div>
                             <div>
                             ${item.reply_content}
                             </div>
@@ -187,10 +205,10 @@
       //-- 해당 계정이 아닌 계정으로 생성한 댓글카드 생성 --
       function make_card(item) {
         let htmlTemp = `
-                      <div class="card" id="${item.replyId}">
+                      <div class="card reply_card" id="${item.replyId}">
                         <div class="card-content">
-                          <div class="content">
-                            작성자 : ${item.nickname} <br>
+                          <div class="content"><i class="far fa-comment-dots"></i>
+                            ${item.nickname} <br>
                             <div>
                             ${item.reply_content}
                             </div>
@@ -233,15 +251,27 @@
         console.log('edit클릭!!');
         const temp_replyId = replyId;
         const temp_nickname = nickname;
-        const temp_reply_content = reply_content;
+        let temp_reply_content = reply_content;
+
+        let fixBr = temp_reply_content
+        temp_reply_content = fixBr.replace(/(?:<br><br \/>|<br>|<br \/>)/g, '\n');
 
       $( "div#"+temp_replyId ).replaceWith(`<div class="card reply_card" id="${temp_replyId}">
                         <div class="card-content">
-                          <div class="content">
-                            작성자 : ${temp_nickname}
-                            <button onclick="edit_confirm('${temp_replyId}')">저장</button>
-                            <button onclick="window.location.reload()">취소</button><br>
-                            <input id="edit_content" value="${temp_reply_content}"></input>
+                          <div class="content"><i class="far fa-comment-dots"></i>
+                            ${temp_nickname}
+                            <div id="reply_topSet">
+                              <span onclick="edit_confirm('${temp_replyId}')">저장</span> ｜ 
+                              <span onclick="window.location.reload()">취소</span>
+                            </div>
+                            <div>
+                              <textarea
+                                style="resize: none; height: 75px;"
+                                id="edit_content"
+                                class="input"
+                                rows="3"
+                              >${temp_reply_content}</textarea>
+                            </div>
                           </div>
                         </div>
                       </div>`);
@@ -314,10 +344,31 @@
     </script>
   </head>
   <body>
-    <nav class="navbar navbar-light">
+    <!-- <nav class="navbar navbar-light">
       <span class="container-fluid">
         <a id="nav-title" class="navbar-brand" href="/">제이슨의 게시판</a>
       </span>
+    </nav> -->
+
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a id="nav-title" class="navbar-brand" href="/">제이슨의 게시판</a>
+          </div>
+
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <a class="button is-light navbar-btn" id="nav-loginOut" onclick="signInOut()">
+                  로그인
+                </a>
+                <a class="button is-light navbar-btn" id="nav-regist" href="/register">
+                  <strong>회원가입</strong>
+                </a>
+              </div>
+            </div>
+          </div>
+      </div>
     </nav>
 
     <div id="detail_wrap">
@@ -337,11 +388,17 @@
     </div>
 
     <div class="card" id="reply_makeBox">
-      <div class="card-content">
+      <div class="card-content" id="create_reply_box">
         <div class="control">
-          <input class="input" id="reply_input" type="text" placeholder="여러분의 댓글을 입력해주세요.">
+          <textarea
+          style="resize: none;"
+          id="reply_input"
+          class="input"
+          placeholder="여러분의 댓글을 입력해주세요. (최대 3줄까지 표시됩니다.)"
+          rows="3"
+        ></textarea>
         </div>
-        <button onclick="create_reply()">댓글작성</button>
+        <button class="button is-link is-light is-rounded" id="create_reply_btn" onclick="create_reply()">댓글작성</button>
       </div>
     </div>
 

@@ -19,14 +19,19 @@
   margin-bottom: 0px;
 }
 
+/* navbar */
 .navbar{
   font-family: 'Song Myung', serif;
   font-weight: bolder;
   background-color: #586361;
 }
 
-#nav-login{
-  color: wheat;
+.navbar-btn{
+  display: flex;
+  font-size: 18px;
+  font-weight: bolder;
+  color: darkkhaki;
+
 }
 
 .posting_box{
@@ -81,11 +86,12 @@ a:hover{
   z-index: 2000;
 }
 
-/* rt */
+/* reply */
 .reply_card{
   width: 65%;
   height: 130px;
   margin: 20px auto;
+  cursor: default;
 }
 
 #reply_makeBox{
@@ -96,4 +102,34 @@ a:hover{
 
 #reply_input{
   height: 100px;
+}
+
+#reply_topSet{
+  display: inline-block;
+  float: right;
+  color: dimgray;
+  font-size: 13px;
+}
+
+#reply_topSet > span {
+  cursor: pointer;
+}
+
+#reply_topSet > span:hover{
+  font-weight: bold;
+}
+#create_reply_box{
+  text-align: right;
+}
+#create_reply_btn{
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+/* login & register */
+#login_footer{
+  text-align: center;
+}
+#register_footer{
+  text-align: center;
 }

@@ -55,6 +55,24 @@
     <style></style>
 
     <script>
+      let token = localStorage.getItem("token");
+
+      $(document).ready(function() {
+        if (token) {
+          $("#nav-loginOut").text("로그아웃");
+        }
+      });
+
+      //login 여부에 따라 로그아웃처리 또는 login페이지 이동
+      function signInOut() {
+        if(token){
+          localStorage.clear();
+          window.location.href = "/";
+        } else{
+          window.location.href = "/login";
+        }
+      }
+
       function create_post() {
         let title = $("#title").val();
         let writer = $("#writer").val();
@@ -101,11 +119,26 @@
     </script>
   </head>
   <body>
-    <nav class="navbar navbar-light">
-      <span class="container-fluid">
-        <a id="nav-title" class="navbar-brand" href="/">제이슨의 게시판</a>
-      </span>
-    </nav>
+      <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a id="nav-title" class="navbar-brand" href="/">제이슨의 게시판</a>
+          </div>
+  
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <a class="button is-light navbar-btn" id="nav-loginOut" onclick="signInOut()">
+                  로그인
+                </a>
+                <a class="button is-light navbar-btn" id="nav-regist" href="/register">
+                  <strong>회원가입</strong>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
 
     <div id="input_wrap" class="posting_box box">
       <div class="field">
@@ -138,6 +171,7 @@
         <label class="label">작성내용</label>
         <div class="control">
           <textarea
+            style="resize: none;"
             id="content"
             class="textarea"
             placeholder=""

@@ -52,12 +52,27 @@
     <style></style>
 
     <script>
+      const token = localStorage.getItem("token");
+
+      //게시글 출력 & login 여부에 따라 로그인/아웃 적용
       $(document).ready(function() {
         get_posts();
+        if (token) {
+          $("#nav-loginOut").text("로그아웃");
+        }
       });
 
+      //login 여부에 따라 로그아웃처리 또는 login페이지 이동
+      function signInOut() {
+        if(token){
+          localStorage.clear();
+          window.location.href = "/";
+        } else{
+          window.location.href = "/login";
+        }
+      }
+
       //토큰 여부 사전 체크
-      const token = localStorage.getItem("token");
       function tokenCheck(){
         if (!token) {
           alert("로그인이 필요한 기능입니다.");
@@ -112,21 +127,39 @@
         $("#cards_box").append(htmlTemp);
       }
 
-      function signOut() {
-        localStorage.clear();
-        window.location.href = "/";
-      }
+
     </script>
   </head>
   <body>
-    <nav class="navbar navbar-light">
+    <!-- <nav class="navbar navbar-light">
       <span class="container-fluid">
         <a id="nav-title" class="navbar-brand" href="/">제이슨의 게시판</a>
-        <a id="nav-login" class="navbar-brand" href="/login">로그인</a>
-        <a id="nav-regist" class="navbar-brand" href="/register">회원가입</a>
-        <a id="nav-logout" class="navbar-brand" onclick="signOut()">로그아웃</a>
+        <a id="nav-login" class="navbar-btn" href="/login">로그인</a>
+        <a id="nav-regist" class="navbar-btn" href="/register">회원가입</a>
+        <a id="nav-logout" class="navbar-btn" onclick="signOut()">로그아웃</a>
       </span>
-    </nav>
+    </nav> -->
+
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a id="nav-title" class="navbar-brand" href="/">제이슨의 게시판</a>
+          </div>
+
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <a class="button is-light navbar-btn" id="nav-loginOut" onclick="signInOut()">
+                  로그인
+                </a>
+                <a class="button is-light navbar-btn" id="nav-regist" href="/register">
+                  <strong>회원가입</strong>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
 
     <div class="btn_wrap">
         <button id="post_btn" class="button" type="button" onclick="tokenCheck()">게시글 작성</button>
