@@ -113,10 +113,18 @@
       }
 
       //수정하기 클릭 시 실행하여 post_edit페이지로 이동
-      function move_edit() {
-        let moveTo = "?postsId=" + postsId_toEdit;
-        window.location.href = "/post_edit" + moveTo;
+            //토큰 여부 사전 체크
+      const token = localStorage.getItem("token");
+      function tokenCheck(){
+        if (!token) {
+          alert("로그인이 필요한 기능입니다.");
+          window.location.href="/login"
+        }else{
+          let moveTo = "?postsId=" + postsId_toEdit;
+          window.location.href = "/post_edit" + moveTo;
+        }
       }
+
 
       //--- 이하 댓글 관련 기능 ---
 
@@ -267,8 +275,8 @@
 
 
       //-- 댓글 삭제 --
-      function delete_card(replyId){
-
+      function delete_card(){
+        let replyId = $('#deleteAlertModal').data('test')
         $.ajax({
           type: "POST",
           url: `/api/reply_delete/`,
@@ -289,7 +297,6 @@
         });
       }
 
-
       //--Alert--
       function customAlert(text, confirmCallback) {
         $("#alertText").text(text);
@@ -299,31 +306,10 @@
         }
       }
 
-
-      var $button= $("button[data-target='#exampleModal']");
-        $(".parent").click(function(event){
-          if (!$(event.target).is($button)) {
-            alert("Parent event");
-          }
-        })
-        $('#exampleModal').on('show.bs.modal', function (event) {
-          alert("btn event");
-          var button= $(event.relatedTarget) //Button triggered the modal
-          var recipient= button.data('whatever')
-          var message= button.data('message')
-          var modal= $(this)
-          modal.find('.modal-title').text('New message to ' + recipient)
-          modal.find('.modal-body input').val(recipient)
-          modal.find('.modal-body textarea').val(message)
-        })
-
       function deleteAlert(replyId) {
         $("#deleteAlertModal").modal("show");
-        console.log('딜리트 알랏')
-        console.log(deleteReplyId)
+        $('#deleteAlertModal').data('test',replyId);
       }
-
-
 
     </script>
   </head>
@@ -339,7 +325,7 @@
         <h1 id="title"></h1>
         <span id="top_set">
           <span id="writer"></span> ｜ <span id="date"></span> ｜
-          <span id="edit_btn" onclick="move_edit()">수정</span>
+          <span id="edit_btn" onclick="tokenCheck()">수정</span>
         </span>
         <hr />
         <p id="content"></p>
@@ -427,8 +413,7 @@
             정말로 댓글을 삭제하겠습니까?
           </div>
           <div class="modal-footer">
-              
-              <button class="button is-warning" onclick="delete_card(deleteReplyId)">확인</button>
+              <button class="button is-warning" onclick="delete_card()">확인</button>
               <button type="button" class="button" data-dismiss="modal">취소</button>
           </div>
         </div>

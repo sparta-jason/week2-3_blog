@@ -67,12 +67,14 @@
         console.log(pwCheckResult)
         if (pwCheckResult != null || password == '') {
           alert("비밀번호는 숫자만 입력해주세요.")
-          return;
         }
 
         $.ajax({
           type: "POST",
           url: `/api/posting_create`,
+          headers: {
+                  authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
           data: {
             title,
             writer,
@@ -82,8 +84,19 @@
           success: function(response) {
             window.location.href = "/";
             alert(response["result"]);
-          }
+          },
+          error: function (error) {
+            customAlert(error.responseJSON.errorMessage);
+          },
         });
+      }
+
+      function customAlert(text, confirmCallback) {
+        $("#alertText").text(text);
+        $("#alertModal").modal("show");
+        if (confirmCallback) {
+          $("#alertModal .btn-confirm").click(confirmCallback);
+        }
       }
     </script>
   </head>
@@ -137,6 +150,44 @@
         <button class="button is-success" onclick="create_post()">
           글쓰기
         </button>
+      </div>
+    </div>
+
+    <!-- modal -->
+    <div
+      class="modal text-left"
+      id="alertModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="alertModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="alertModalLabel">알림</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="alertText">
+            정말로 로그아웃 하시겠습니까?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="button"
+              data-dismiss="modal"
+            >
+              확인
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </body>

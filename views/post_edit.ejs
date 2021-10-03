@@ -65,10 +65,15 @@
         $.ajax({
           type: "GET",
           url: `/api/posts/${postsId}`,
+          headers: {
+                  authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
           data: {},
           error: function(xhr, status, error) {
             if (status == 404) {
               alert("존재하지 않는 포스팅입니다.");
+            } else{
+              customAlert(error.responseJSON.errorMessage);
             }
             window.location.href = "/";
           },
@@ -92,6 +97,9 @@
         $.ajax({
           type: "PUT",
           url: `/api/posting_update`,
+          headers: {
+                  authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
           data: {
             postsId,
             title,
@@ -114,7 +122,10 @@
             } else{
               window.location.href = "/post_detail" + moveTo
             }
-          }
+          },
+          error: function (error) {
+            customAlert(error.responseJSON.errorMessage);
+          },
         });
       }
 
@@ -124,6 +135,9 @@
         $.ajax({
           type: "DELETE",
           url: `/api/posting_delete`,
+          headers: {
+                  authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
           data: {
             postsId: postsId,
             password: password
@@ -136,8 +150,20 @@
             } else {
               window.location.href = "/";
             }
-          }
+          },
+          error: function (error) {
+            customAlert(error.responseJSON.errorMessage);
+          },
         });
+      }
+
+      //--Alert--
+      function customAlert(text, confirmCallback) {
+        $("#alertText").text(text);
+        $("#alertModal").modal("show");
+        if (confirmCallback) {
+          $("#alertModal .btn-confirm").click(confirmCallback);
+        }
       }
     </script>
   </head>
@@ -202,6 +228,44 @@
         <button class="button is-warning" onclick="delete_post()">
           삭제하기
         </button>
+      </div>
+    </div>
+
+    <!-- modal -->
+    <div
+      class="modal text-left"
+      id="alertModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="alertModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="alertModalLabel">알림</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="alertText">
+            정말로 로그아웃 하시겠습니까?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="button"
+              data-dismiss="modal"
+            >
+              확인
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </body>

@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-
+const authMiddleware = require("../middlewares/auth-middleware");
 const Posts = require("../schemas/posts");
 
 //포스트들 전체 조회(index)
@@ -24,12 +24,12 @@ router.get("/posts/:postsId", async (req, res) => {
 });
 
 //포스팅 입력 창
-router.get("/posting", async (req, res, next) => {
+router.get("/posting", authMiddleware, async (req, res, next) => {
   res.render("posting");
 });
 
 //포스팅 저장 시
-router.post("/posting_create", async (req, res, next) => {
+router.post("/posting_create", authMiddleware, async (req, res, next) => {
 
   let { title, writer, password, content } = req.body;
 
@@ -78,7 +78,7 @@ router.post("/posting_create", async (req, res, next) => {
 //포스팅 수정 시
 //작성일자를 현재 일자로 수정하시겠습니까? 알럿 및 분기처리
 //비밀번호 일치 체크
-router.put("/posting_update", async (req, res, next) => {
+router.put("/posting_update", authMiddleware, async (req, res, next) => {
   let put_data = req.body;
 
   //postsId가 존재하는지 null 체크
@@ -123,7 +123,7 @@ router.put("/posting_update", async (req, res, next) => {
 });
 
 //포스팅 삭제 시
-router.delete("/posting_delete", async (req, res, next) => {
+router.delete("/posting_delete", authMiddleware, async (req, res, next) => {
 
   let put_data = req.body;
 

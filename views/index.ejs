@@ -56,6 +56,18 @@
         get_posts();
       });
 
+      //토큰 여부 사전 체크
+      const token = localStorage.getItem("token");
+      function tokenCheck(){
+        if (!token) {
+          alert("로그인이 필요한 기능입니다.");
+          window.location.href="/login"
+        }else{
+          window.location.href='/posting'
+        }
+      }
+
+      //포스트 전체 조회
       function get_posts() {
         $("#cards_box").empty();
         $.ajax({
@@ -117,9 +129,7 @@
     </nav>
 
     <div class="btn_wrap">
-      <a href="/posting">
-        <button id="post_btn" class="button" type="button">게시글 작성</button>
-      </a>
+        <button id="post_btn" class="button" type="button" onclick="tokenCheck()">게시글 작성</button>
     </div>
 
     <div class="container-fluid">
