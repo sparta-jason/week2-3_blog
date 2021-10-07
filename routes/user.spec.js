@@ -33,14 +33,14 @@ test('비밀번호와 비밀번호확인에 입력된 값은 정확히 일치해
 });
 
 app = supertest(server);
-it('DB에 존재하는 닉네임으로 회원가입 버튼을 누르면 "이미 가입된 닉네임이 있습니다."라는 에러메세지가 발생한다.', async() => {
+test('DB에 존재하는 닉네임으로 회원가입 버튼을 누르면 "이미 가입된 닉네임이 있습니다."라는 에러메세지가 발생한다.', async() => {
   const res = await app.post('/api/users').send({
     nickname: 'something',
     password: '12345678',
     confirmPassword: '12345678',
   })
   expect(res.status).toBe(400);
-  expect(res.send).toBe({errorMessage: '이미 가입된 닉네임이 있습니다.'})
+  expect(res.text).toBe("{\"errorMessage\":\"이미 가입된 닉네임이 있습니다.\"}")
 });
 
 afterAll(async () => {
