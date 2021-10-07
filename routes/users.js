@@ -87,7 +87,6 @@ router.post("/auth", async (req, res) => {
   });
 });
 
-console.log("test2")
 module.exports = router;
 module.exports.valCheckId = valCheckId;
 module.exports.valCheckPw = valCheckPw;
