@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const port = 3000;
 
 //xss sanitizer
 const { xss } = require('express-xss-sanitizer');
@@ -51,6 +50,8 @@ app.get("/register", (req, res) => {
   res.render("register");
 });
 
-app.listen(port, () => {
-  console.log(`listening at http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`listening at http://localhost:${port}`);
+// });
+
+module.exports = app;
